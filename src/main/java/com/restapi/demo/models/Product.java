@@ -11,15 +11,15 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String productName;
-    private int year;
+    private int productYear;
     private Double price;
     private String url;
 
     public Product() {};
 
-    public Product(String productName, int year, Double price, String url) {
+    public Product(String productName, int productYear, Double price, String url) {
         this.productName = productName;
-        this.year = year;
+        this.productYear = productYear;
         this.price = price;
         this.url = url;
     }
@@ -29,7 +29,7 @@ public class Product {
         return "Product{" +
                 "id=" + id +
                 ", productName='" + productName + '\'' +
-                ", year=" + year +
+                ", year=" + productYear +
                 ", price=" + price +
                 ", url='" + url + '\'' +
                 '}';
@@ -52,11 +52,11 @@ public class Product {
     }
 
     public int getYear() {
-        return year;
+        return productYear;
     }
 
     public void setYear(int year) {
-        this.year = year;
+        this.productYear = year;
     }
 
     public Double getPrice() {
