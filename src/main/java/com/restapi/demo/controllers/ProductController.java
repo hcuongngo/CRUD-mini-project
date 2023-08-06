@@ -1,12 +1,12 @@
 package com.restapi.demo.controllers;
 
 import com.restapi.demo.models.Product;
+import com.restapi.demo.models.ResponseObject;
 import com.restapi.demo.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,17 +19,30 @@ public class ProductController {
     private ProductRepository repository;
 
     @GetMapping("")
-    //http://localhost:8080/api/v1/Products
+        //http://localhost:8080/api/v1/Products
     List<Product> getAllProducts() {
         return repository.findAll();
     }
 
     @GetMapping("/{id}")
-        Product findById(@PathVariable Long id) {
-            return repository.findById(id).orElseThrow(() -> new RuntimeException("Can not find product with id = " + id));
-        }
+    ResponseEntity<ResponseObject> findById(@PathVariable Long id) {
+        Optional<Product> foundProduct = repository.findById(id);
+        return foundProduct.isPresent() ?
+                ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject("OK", "Query Sucess", foundProduct)) :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ResponseObject("false", "Can not find product with id = " + id, "")
+                );
+    }
 
-
-
-
+    @PostMapping("")
+    ResponseEntity<ResponseObject> insertProduct(@RequestBody Product newProduct) {
+        //list product must not have the same name!
+        List<Product> foundProduct =  repository.findByProductName(newProduct.getProductName().trim());
+        return foundProduct.size() > 0 ?ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
+                new ResponseObject("failed", "Product name already taken", "")
+        ): ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK", "Insert Success", repository.save(newProduct))
+        );
+    }
 }
